@@ -1,0 +1,8 @@
+name: UHCCombat
+version: 0.1
+main: me.nucha.uhcc.UHCCombat
+commands:
+  uhc:
+    permission: uhccombat.uhc
+    description: The main command.
+    aliases: [uhcc, uhccombat]
