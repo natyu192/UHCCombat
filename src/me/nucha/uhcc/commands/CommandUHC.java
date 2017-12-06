@@ -1,6 +1,8 @@
 package me.nucha.uhcc.commands;
 
 import me.nucha.uhcc.UHCCombat;
+import me.nucha.uhcc.language.LanguageManager;
+import me.nucha.uhcc.language.Languages;
 import me.nucha.uhcc.utils.ConfigUtil;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,76 +18,95 @@ public class CommandUHC implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		LanguageManager lm = UHCCombat.languageManager;
 		if (args.length == 1) {
 			if (args[0].equalsIgnoreCase("head")) {
 				if (!(sender instanceof Player)) {
-					sender.sendMessage(prefix + "§cゲーム内でのみ実行できます");
+					sender.sendMessage(prefix + lm.get("only-players-command"));
 					return true;
 				}
 				Player p = (Player) sender;
 				ItemStack head = UHCCombat.getPlayerHead(sender.getName(), "Free Head");
 				p.getInventory().addItem(head);
-				sender.sendMessage(prefix + "§aあなたのHeadを手に入れました");
+				sender.sendMessage(prefix + lm.get("gave-own-head"));
 				return true;
 			}
 			if (args[0].equalsIgnoreCase("ghead")) {
 				if (!(sender instanceof Player)) {
-					sender.sendMessage(prefix + "§cゲーム内でのみ実行できます");
+					sender.sendMessage(prefix + lm.get("only-players-command"));
 					return true;
 				}
 				Player p = (Player) sender;
 				ItemStack head = UHCCombat.getGoldenHead();
 				p.getInventory().addItem(head);
-				sender.sendMessage(prefix + "§6Golden Head§aを手に入れました");
+				sender.sendMessage(prefix + lm.get("gave-own-golden-head"));
 				return true;
 			}
 			if (args[0].equalsIgnoreCase("toggle")) {
 				if (UHCCombat.UHCModeEnabled) {
-					sender.sendMessage(prefix + "§cUHC Mode§eをOFFにしました");
+					sender.sendMessage(prefix + lm.get("uhc-mode-disabled"));
 				} else {
-					sender.sendMessage(prefix + "§cUHC Mode§aをONにしました");
+					sender.sendMessage(prefix + lm.get("uhc-mode-enabled"));
 				}
 				ConfigUtil.setEnableUHCMode(!UHCCombat.UHCModeEnabled);
 				return true;
 			}
 			if (args[0].equalsIgnoreCase("speed")) {
-				sender.sendMessage(prefix + "§a/uhc speed <長さ> §2--- §bHeadを食べたときに付くスピードエフェクトの長さを変更します(単位は秒)");
+				sender.sendMessage(prefix + lm.get("cmd-usage-speed"));
+				return true;
+			}
+			if (args[0].equalsIgnoreCase("lang")) {
+				sender.sendMessage(prefix + lm.get("cmd-usage-lang"));
 				return true;
 			}
 		}
 		if (args.length == 2) {
 			if (args[0].equalsIgnoreCase("head")) {
 				if (!(sender instanceof Player)) {
-					sender.sendMessage(prefix + "§cゲーム内でのみ実行できます");
+					sender.sendMessage(prefix + lm.get("only-players-command"));
 					return true;
 				}
 				Player p = (Player) sender;
 				ItemStack head = UHCCombat.getPlayerHead(args[1], "Free Head");
 				p.getInventory().addItem(head);
-				sender.sendMessage(prefix + "§a" + args[1] + "のHeadを手に入れました");
+				sender.sendMessage(prefix + lm.get("gave-others-head").replaceAll("%player%", args[1]));
 				return true;
 			}
 			if (args[0].equalsIgnoreCase("speed")) {
 				if (!StringUtils.isNumeric(args[1])) {
-					sender.sendMessage(prefix + "§c長さは秒で指定してください");
+					sender.sendMessage(prefix + lm.get("cmd-input-number"));
 					return true;
 				}
 				int duration = Integer.valueOf(args[1]);
 				if (!(duration > 0)) {
-					sender.sendMessage(prefix + "§c長さは1秒以上を指定してください");
+					sender.sendMessage(prefix + lm.get("cmd-input-number-greater-than-1"));
 					return true;
 				}
 				int before = UHCCombat.headSpeedDuration;
 				ConfigUtil.setHeadDuration(duration);
-				sender.sendMessage(prefix + "§aHeadを食べたときに付くスピードエフェクトの長さを§9" + before + "§a秒から§b" + duration + "§a秒に変更しました");
+				sender.sendMessage(prefix
+						+ lm.get("changed-head-speed-duration").replaceAll("%before%", String.valueOf(before))
+								.replaceAll("%duration%", String.valueOf(duration)));
+				return true;
+			}
+			if (args[0].equalsIgnoreCase("lang")) {
+				if (args[1].equalsIgnoreCase("japanese") || args[1].equalsIgnoreCase("english")) {
+					Languages lang = Languages.valueOf(args[1].toUpperCase());
+					ConfigUtil.setLanguage(lang);
+					UHCCombat.languageManager.loadMessages(lang);
+					sender.sendMessage(prefix + lm.get("set-lang").replaceAll("%language%", lang.getName()));
+				} else {
+					sender.sendMessage(prefix + lm.get("cmd-langs"));
+				}
 				return true;
 			}
 		}
 		sender.sendMessage(prefix + "§a------------ §cUHCCombat §aby §eNucha §a------------");
-		sender.sendMessage(prefix + "§a/uhc head [名前] §2--- §bHeadを手に入れます");
-		sender.sendMessage(prefix + "§a/uhc ghead §2--- §6Golden Head§bを手に入れます");
-		sender.sendMessage(prefix + "§a/uhc toggle §2--- §cUHC Mode§bを切り替えます");
-		sender.sendMessage(prefix + "§a/uhc speed <長さ> §2--- Headを食べたときに付くスピードエフェクトの長さを変更します(単位は秒)");
+		sender.sendMessage(prefix + lm.get("cmd-usage-head"));
+		sender.sendMessage(prefix + lm.get("cmd-usage-ghead"));
+		sender.sendMessage(prefix + lm.get("cmd-usage-toggle"));
+		sender.sendMessage(prefix + lm.get("cmd-usage-speed"));
+		sender.sendMessage(prefix + lm.get("cmd-usage-lang"));
 		return true;
 	}
 

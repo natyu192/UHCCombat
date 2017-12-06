@@ -3,6 +3,8 @@ package me.nucha.uhcc;
 import java.util.Arrays;
 
 import me.nucha.uhcc.commands.CommandUHC;
+import me.nucha.uhcc.language.LanguageManager;
+import me.nucha.uhcc.language.Languages;
 import me.nucha.uhcc.listeners.CombatListener;
 import me.nucha.uhcc.listeners.UHCListener;
 import me.nucha.uhcc.utils.ConfigUtil;
@@ -20,20 +22,26 @@ public class UHCCombat extends JavaPlugin {
 	private static UHCCombat plugin;
 	public static boolean UHCModeEnabled;
 	public static int headSpeedDuration;
+	public static Languages language;
+	public static LanguageManager languageManager;
 
 	@Override
 	public void onEnable() {
 		saveDefaultConfig();
-		ConfigUtil.init(this);
+		ConfigUtil.init();
 		initValues();
 		registerEvents();
 		registerCommands();
 		registerRecipes();
+		languageManager = new LanguageManager(language, this);
 	}
 
 	@Override
 	public void onDisable() {
-
+		getConfig().set(ConfigUtil.enable_uhc_mode, UHCModeEnabled);
+		getConfig().set(ConfigUtil.head_speed_duration, headSpeedDuration);
+		getConfig().set(ConfigUtil.language, language.name());
+		saveConfig();
 	}
 
 	private void initValues() {
@@ -47,6 +55,11 @@ public class UHCCombat extends JavaPlugin {
 			headSpeedDuration = getConfig().getInt(ConfigUtil.head_speed_duration);
 		} else {
 			headSpeedDuration = 20;
+		}
+		if (getConfig().isSet(ConfigUtil.language)) {
+			language = Languages.valueOf(getConfig().getString(ConfigUtil.language).toUpperCase());
+		} else {
+			language = Languages.ENGLISH;
 		}
 	}
 
