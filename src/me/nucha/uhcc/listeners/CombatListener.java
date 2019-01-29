@@ -3,11 +3,6 @@ package me.nucha.uhcc.listeners;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
-import me.nucha.uhcc.UHCCombat;
-import me.nucha.uhcc.utils.CustomItem;
-import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
-import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -23,6 +18,11 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import me.nucha.uhcc.UHCCombat;
+import me.nucha.uhcc.utils.CustomItem;
+import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
+import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
+
 public class CombatListener implements Listener {
 
 	private UHCCombat plugin;
@@ -33,6 +33,10 @@ public class CombatListener implements Listener {
 
 	@EventHandler
 	public void onDeath(PlayerDeathEvent event) {
+		if (UHCCombat.UHCModeEnabled || UHCCombat.deathLightningEnabled) {
+			Player p = event.getEntity();
+			p.getWorld().strikeLightningEffect(p.getLocation());
+		}
 		if (UHCCombat.UHCModeEnabled) {
 			Player p = event.getEntity();
 			ItemStack skull = new CustomItem(Material.SKULL_ITEM, 1, "§c§l" + p.getName() + "'s Head", 3);
@@ -76,39 +80,35 @@ public class CombatListener implements Listener {
 					}
 				}
 			} else {
-				// String defDeathMessage = event.getDeathMessage();
-				String deathMessage = "Unknown";
-				String messageSuffix = " was slain!";
+				String messageSuffix = "was slain!";
 				switch (p.getLastDamageCause().getCause()) {
 				case FALL:
-					messageSuffix = " fell to their death!";
+					messageSuffix = "fell to their death!";
 					break;
 				case SUFFOCATION:
-					messageSuffix = " suffocated in a wall!";
+					messageSuffix = "suffocated in a wall!";
 					break;
 				case LAVA:
-					messageSuffix = " tried to swim in lava!";
+					messageSuffix = "tried to swim in lava!";
 					break;
 				case FIRE:
-					messageSuffix = " walked into fire!";
+					messageSuffix = "walked into fire!";
 					break;
 				case DROWNING:
-					messageSuffix = " drowned";
+					messageSuffix = "drowned";
 					break;
 				case ENTITY_EXPLOSION:
-					messageSuffix = " exploded";
+					messageSuffix = "exploded";
 					break;
 				default:
 					break;
 				}
-				deathMessage = messageSuffix;
-				skullMeta.setLore(Arrays.asList(new String[] { "§7" + deathMessage }));
 				newDeathMessage = p.getName() + messageSuffix;
+				skullMeta.setLore(Arrays.asList(new String[] { "§7 " + messageSuffix }));
 			}
 			skull.setItemMeta(skullMeta);
 			// event.getDrops().add(skull);
 			p.getWorld().dropItemNaturally(p.getLocation(), skull);
-			p.getWorld().strikeLightningEffect(p.getLocation());
 			event.setDeathMessage("§c" + newDeathMessage);
 			Bukkit.getScheduler().runTaskLater(plugin, () -> {
 				((CraftPlayer) p).getHandle().playerConnection.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
@@ -118,7 +118,8 @@ public class CombatListener implements Listener {
 
 	@EventHandler
 	public void onRegen(EntityRegainHealthEvent event) {
-		if (UHCCombat.UHCModeEnabled && event.getEntity() instanceof Player && event.getRegainReason() == RegainReason.SATIATED) {
+		if ((UHCCombat.UHCModeEnabled || UHCCombat.doubleHPEnabled) && event.getEntity() instanceof Player
+				&& event.getRegainReason() == RegainReason.SATIATED) {
 			event.setCancelled(true);
 		}
 	}

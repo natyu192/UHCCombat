@@ -1,7 +1,5 @@
 package me.nucha.uhcc.listeners;
 
-import me.nucha.uhcc.UHCCombat;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,11 +11,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import me.nucha.uhcc.UHCCombat;
+
 public class UHCListener implements Listener {
 
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
-		if (UHCCombat.UHCModeEnabled) {
+		if (UHCCombat.UHCModeEnabled || UHCCombat.doubleHPEnabled) {
 			Player p = event.getPlayer();
 			p.setMaxHealth(40);
 			if (p.getHealth() == 20) {

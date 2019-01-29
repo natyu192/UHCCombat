@@ -2,6 +2,13 @@ package me.nucha.uhcc;
 
 import java.util.Arrays;
 
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import me.nucha.uhcc.commands.CommandUHC;
 import me.nucha.uhcc.language.LanguageManager;
 import me.nucha.uhcc.language.Languages;
@@ -10,17 +17,12 @@ import me.nucha.uhcc.listeners.UHCListener;
 import me.nucha.uhcc.utils.ConfigUtil;
 import me.nucha.uhcc.utils.CustomItem;
 
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-
 public class UHCCombat extends JavaPlugin {
 
 	private static UHCCombat plugin;
 	public static boolean UHCModeEnabled;
+	public static boolean doubleHPEnabled;
+	public static boolean deathLightningEnabled;
 	public static int headSpeedDuration;
 	public static Languages language;
 	public static LanguageManager languageManager;
@@ -39,6 +41,8 @@ public class UHCCombat extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		getConfig().set(ConfigUtil.enable_uhc_mode, UHCModeEnabled);
+		getConfig().set(ConfigUtil.enable_double_hp, doubleHPEnabled);
+		getConfig().set(ConfigUtil.enable_death_lightning, deathLightningEnabled);
 		getConfig().set(ConfigUtil.head_speed_duration, headSpeedDuration);
 		getConfig().set(ConfigUtil.language, language.name());
 		saveConfig();
@@ -50,6 +54,16 @@ public class UHCCombat extends JavaPlugin {
 			UHCModeEnabled = getConfig().getBoolean(ConfigUtil.enable_uhc_mode);
 		} else {
 			UHCModeEnabled = true;
+		}
+		if (getConfig().isSet(ConfigUtil.enable_double_hp)) {
+			doubleHPEnabled = getConfig().getBoolean(ConfigUtil.enable_double_hp);
+		} else {
+			doubleHPEnabled = true;
+		}
+		if (getConfig().isSet(ConfigUtil.enable_death_lightning)) {
+			deathLightningEnabled = getConfig().getBoolean(ConfigUtil.enable_death_lightning);
+		} else {
+			deathLightningEnabled = true;
 		}
 		if (getConfig().isSet(ConfigUtil.head_speed_duration)) {
 			headSpeedDuration = getConfig().getInt(ConfigUtil.head_speed_duration);

@@ -1,16 +1,16 @@
 package me.nucha.uhcc.commands;
 
-import me.nucha.uhcc.UHCCombat;
-import me.nucha.uhcc.language.LanguageManager;
-import me.nucha.uhcc.language.Languages;
-import me.nucha.uhcc.utils.ConfigUtil;
-
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import me.nucha.uhcc.UHCCombat;
+import me.nucha.uhcc.language.LanguageManager;
+import me.nucha.uhcc.language.Languages;
+import me.nucha.uhcc.utils.ConfigUtil;
 
 public class CommandUHC implements CommandExecutor {
 
@@ -53,6 +53,24 @@ public class CommandUHC implements CommandExecutor {
 			}
 			if (args[0].equalsIgnoreCase("speed")) {
 				sender.sendMessage(prefix + lm.get("cmd-usage-speed"));
+				return true;
+			}
+			if (args[0].equalsIgnoreCase("hp")) {
+				if (UHCCombat.doubleHPEnabled) {
+					sender.sendMessage(prefix + lm.get("double-hp-disabled"));
+				} else {
+					sender.sendMessage(prefix + lm.get("double-hp-enabled"));
+				}
+				ConfigUtil.setDoubleHP(!UHCCombat.doubleHPEnabled);
+				return true;
+			}
+			if (args[0].equalsIgnoreCase("lightning")) {
+				if (UHCCombat.deathLightningEnabled) {
+					sender.sendMessage(prefix + lm.get("death-lightning-disabled"));
+				} else {
+					sender.sendMessage(prefix + lm.get("death-lightning-enabled"));
+				}
+				ConfigUtil.setDeathLightning(!UHCCombat.deathLightningEnabled);
 				return true;
 			}
 			if (args[0].equalsIgnoreCase("lang")) {
@@ -106,6 +124,8 @@ public class CommandUHC implements CommandExecutor {
 		sender.sendMessage(prefix + lm.get("cmd-usage-ghead"));
 		sender.sendMessage(prefix + lm.get("cmd-usage-toggle"));
 		sender.sendMessage(prefix + lm.get("cmd-usage-speed"));
+		sender.sendMessage(prefix + lm.get("cmd-usage-hp"));
+		sender.sendMessage(prefix + lm.get("cmd-usage-lightning"));
 		sender.sendMessage(prefix + lm.get("cmd-usage-lang"));
 		return true;
 	}
