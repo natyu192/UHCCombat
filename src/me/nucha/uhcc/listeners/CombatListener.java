@@ -103,8 +103,8 @@ public class CombatListener implements Listener {
 				default:
 					break;
 				}
-				newDeathMessage = p.getName() + messageSuffix;
-				skullMeta.setLore(Arrays.asList(new String[] { "§7 " + messageSuffix }));
+				newDeathMessage = p.getName() + " " + messageSuffix;
+				skullMeta.setLore(Arrays.asList(new String[] { "§7" + messageSuffix }));
 			}
 			skull.setItemMeta(skullMeta);
 			// event.getDrops().add(skull);
